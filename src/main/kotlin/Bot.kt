@@ -12,11 +12,11 @@ suspend fun main() {
 						val numberPattern = "[1-9]\\d*"
 						when {
 							message.matches(Regex(numberPattern)) -> {
-								it.respond(roll(max = message.toInt()))
+								it.reply(roll(max = message.toInt()))
 							}
 							message.matches(Regex("${numberPattern}d$numberPattern")) -> {
 								val (dices, max) = message.split("d").map { it.toInt() }
-								it.respond(roll(dices, max))
+								it.reply(roll(dices, max))
 							}
 						}
 					}
