@@ -9,14 +9,14 @@ suspend fun main() {
 				try {
 					if (it.content.startsWith("Roll ")) {
 						val message = it.content.removePrefix("Roll ")
-						val numberPattern = "[1-9]\\d*"
+						val numberPattern = "[1-9]\\d{0,2}"
 						when {
 							message.matches(Regex(numberPattern)) -> {
-								it.reply(roll(max = message.toInt()))
+								roll(it, max = message.toInt())
 							}
 							message.matches(Regex("${numberPattern}d$numberPattern")) -> {
-								val (dices, max) = message.split("d").map { it.toInt() }
-								it.reply(roll(dices, max))
+								val (dices, max) = message.split("d").map { parts -> parts.toInt() }
+								roll(it, dices, max)
 							}
 						}
 					}
