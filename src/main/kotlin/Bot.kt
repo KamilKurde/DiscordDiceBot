@@ -9,7 +9,7 @@ suspend fun main() {
 				try {
 					if (it.content.startsWith("Roll ")) {
 						val message = it.content.removePrefix("Roll ")
-						val numberPattern = "[1-9]\\d{0,2}"
+						val numberPattern = "(120|1[01]\\d|[1-9]\\d|[1-9])"
 						when {
 							message.matches(Regex(numberPattern)) -> {
 								roll(it, max = message.toInt())
