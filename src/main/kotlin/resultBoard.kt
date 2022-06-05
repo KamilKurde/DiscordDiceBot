@@ -1,8 +1,10 @@
-fun resultBoard(dices: Int, max: Int, result: List<Int>): String {
+import com.jessecorbett.diskord.api.channel.*
+
+fun Embed.resultBoard(dices: Int, max: Int, result: List<Int>): Embed {
 	val sum = if (result.isEmpty()) "rolling" else result.sum().toString()
-	return """
-		:game_die: Rolling **${dices}d$max**: ${if (result.size in 1 until dices) result.last() else ""}
-		${result.joinToString("+")}
-		**Sum**: $sum
-	""".trimIndent()
+	title = "Rolling **${dices}d$max**"
+	description = result.joinToString("+")
+	footer = EmbedFooter("Sum: $sum")
+	thumbnail = EmbedImage("https://c.tenor.com/IfbgWLbg_88AAAAC/dice.gif")
+	return this
 }

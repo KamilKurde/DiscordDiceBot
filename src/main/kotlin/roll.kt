@@ -1,3 +1,4 @@
+import com.jessecorbett.diskord.api.channel.Embed
 import com.jessecorbett.diskord.api.channel.MessageEdit
 import com.jessecorbett.diskord.api.common.Message
 import com.jessecorbett.diskord.bot.BotContext
@@ -7,12 +8,12 @@ import kotlin.random.nextInt
 
 suspend fun BotContext.roll(message: Message, dices: Int = 1, max: Int) {
 	val rolls = mutableListOf<Int>()
-	val reply = message.reply(resultBoard(dices, max, rolls))
+	val reply = message.reply("Rolling...")
 	val channel = message.channel
 	for (i in 1..dices) {
-		delay(500L)
 		rolls.add(Random.nextInt(1..max))
-		channel.editMessage(reply.id, MessageEdit(resultBoard(dices, max, rolls)))
+		channel.editMessage(reply.id, MessageEdit(null, Embed().resultBoard(dices, max, rolls)))
+		delay(1000L)
 		if (max != 100) continue
 
 		// 100 sided dice
