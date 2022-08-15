@@ -10,7 +10,7 @@ suspend fun main() {
 			onMessageCreate {
 				if (it.author.isBot != true) {
 					try {
-						rolls += Roll(it)
+						rolls += Roll(it, rolls.any { roll -> roll.isActive })
 					} catch (e: Exception) {
 						it.reply(
 									"""
