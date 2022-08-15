@@ -1,25 +1,18 @@
 import com.jessecorbett.diskord.bot.bot
 import com.jessecorbett.diskord.bot.events
 
+private val rolls = mutableListOf<Roll>()
+
 suspend fun main() {
 	bot(System.getenv("RollBotToken"))
 	{
 		events {
 			onMessageCreate {
-				try {
-					if (it.content.startsWith("Roll ")) {
-						val message = it.content.removePrefix("Roll ")
-						val numberPattern = "(120|1[01]\\d|[1-9]\\d|[1-9])"
-						when {
-							message.matches(Regex(numberPattern)) -> {
-								roll(it, max = message.toInt())
-							}
-							message.matches(Regex("${numberPattern}d$numberPattern")) -> {
-								val (dices, max) = message.split("d").map { parts -> parts.toInt() }
-								roll(it, dices, max)
-							}
-							else -> {
-								it.reply(
+				if (it.author.isBot != true) {
+					try {
+						rolls += Roll(it)
+					} catch (e: Exception) {
+						it.reply(
 									"""
 									Invalid command format, correct format for rolling is
 									`Roll [numberOfDices]d[numberOfSides]` or `Roll [numberOfSides]` for rolling single dice.
@@ -27,12 +20,15 @@ suspend fun main() {
 									
 									*Note:* The maximum number of sides for a single dice and maximum number of dices in single throw is 120.
 									""".trimIndent()
-								)
-							}
-						}
+						)
+						logger.error(e.stackTraceToString())
 					}
-				} catch (e: Exception) {
-					logger.error(e.stackTraceToString())
+				}
+			}
+			onMessageDelete {
+				rolls.filter { roll -> roll.initiatorMessage.id == it.id }.forEach {
+					it.delete()
+					rolls -= it
 				}
 			}
 		}
