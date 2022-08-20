@@ -8,7 +8,7 @@ suspend fun main() {
 	{
 		events {
 			onMessageCreate {
-				if (it.author.isBot != true) {
+				if (it.author.isBot != true && it.content.startsWith("Roll")) {
 					try {
 						rolls += Roll(it, rolls.any { roll -> roll.isActive })
 					} catch (e: Exception) {
