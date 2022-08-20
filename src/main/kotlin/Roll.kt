@@ -21,7 +21,7 @@ class Roll private constructor(
 
 		context(BotContext)
 		operator fun invoke(message: Message, instantMode: Boolean): Roll {
-			val content = message.content.removePrefix("Roll ")
+			val content = message.content
 			val (dices: Int, max: Int) = when {
 				content.matches(Regex(numberPattern)) -> listOf(1, content.toInt())
 				content.matches(Regex("${numberPattern}d$numberPattern")) -> content.split("d").map { parts -> parts.toInt() }
