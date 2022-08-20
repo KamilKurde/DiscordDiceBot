@@ -7,14 +7,14 @@ import kotlin.random.Random
 import kotlin.random.nextInt
 
 class Roll private constructor(
-	val initiatorMessage: Message,
+	override val initiatorMessage: Message,
 	private val dices: Int,
 	private val max: Int,
 	instantMode: Boolean,
 	private val reply: Message,
 	private val scope: CoroutineScope,
 	private val botContext: BotContext,
-) {
+): Action {
 
 	companion object {
 		private const val numberPattern = "(120|1[01]\\d|[1-9]\\d|[1-9])"
@@ -84,7 +84,7 @@ class Roll private constructor(
 		reactions += emoji
 	}
 
-	fun delete() {
+	override fun delete() {
 		scope.cancel()
 		CoroutineScope(Job() + Dispatchers.IO).launch {
 			with(botContext) {
@@ -95,5 +95,5 @@ class Roll private constructor(
 
 	private val reactions = mutableListOf<String>()
 
-	val isActive: Boolean get() = scope.isActive
+	override val isActive: Boolean get() = scope.isActive
 }
