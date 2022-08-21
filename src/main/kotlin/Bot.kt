@@ -16,7 +16,7 @@ suspend fun main() {
 							it,
 							this,
 						)
-						logger.error(e.stackTraceToString())
+						logger.error(e.message)
 					}
 				}
 			}
