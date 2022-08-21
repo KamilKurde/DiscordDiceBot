@@ -4,7 +4,7 @@ import kotlinx.coroutines.runBlocking
 
 class Help(
 	override val initiatorMessage: Message,
-	private val botContext: BotContext,
+	botContext: BotContext,
 ) : Action {
 	private val reply = runBlocking {
 		with(botContext) {
@@ -20,11 +20,10 @@ class Help(
 		}
 	}
 
+	context (BotContext)
 	override fun delete() {
 		runBlocking {
-			with(botContext) {
-				reply.delete()
-			}
+			reply.delete()
 		}
 	}
 

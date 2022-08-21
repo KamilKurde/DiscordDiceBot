@@ -13,7 +13,7 @@ class Roll private constructor(
 	instantMode: Boolean,
 	private val reply: Message,
 	private val scope: CoroutineScope,
-	private val botContext: BotContext,
+	botContext: BotContext,
 ): Action {
 
 	companion object {
@@ -84,12 +84,11 @@ class Roll private constructor(
 		reactions += emoji
 	}
 
+	context (BotContext)
 	override fun delete() {
 		scope.cancel()
 		CoroutineScope(Job() + Dispatchers.IO).launch {
-			with(botContext) {
-				reply.delete()
-			}
+			reply.delete()
 		}
 	}
 
