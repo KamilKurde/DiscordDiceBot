@@ -24,7 +24,7 @@ class Roll private constructor(
 			val content = message.content
 			val (dices: Int, max: Int) = when {
 				content.matches(Regex(numberPattern)) -> listOf(1, content.toInt())
-				content.matches(Regex("${numberPattern}d$numberPattern")) -> content.split("d").map { parts -> parts.toInt() }
+				content.matches(Regex("${numberPattern}d$numberPattern")) -> content.split("d").map(String::toInt)
 				else -> throw IllegalArgumentException("Invalid message format")
 			}
 			return Roll(
