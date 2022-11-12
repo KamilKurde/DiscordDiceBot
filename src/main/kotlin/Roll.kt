@@ -56,6 +56,7 @@ class Roll private constructor(
 					}
 				}
 				updateReaction(rolls)
+				initiatorMessage.react("✅")
 				reactions.clear()
 				scope.cancel()
 			}
