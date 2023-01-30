@@ -7,11 +7,10 @@ fun Embed.resultBoard(dices: Int, max: Int, result: List<Int>): Embed {
 	footer = EmbedFooter(
 		buildString {
 			if (result.size == dices) {
-				append("Sum")
+				append("Sum: $sum")
 			} else {
-				append("Currently")
+				append("Currently: $sum (${result.size}/$dices)")
 			}
-			append(": $sum")
 		}
 	)
 	thumbnail = EmbedImage("https://c.tenor.com/IfbgWLbg_88AAAAC/dice.gif")
