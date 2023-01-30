@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.github.KamilKurde"
-version = "1.6"
+version = "1.7"
 
 repositories {
     mavenCentral()
