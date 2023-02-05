@@ -71,7 +71,7 @@ class Roll private constructor(
 	context(BotContext)
 	private suspend fun updateReaction(points: List<Int>) {
 		if (max != 100) return
-		val threshold = 95
+		val threshold = 90
 		if (points.any { it > threshold }) react("☠️")
 		if (points.any { it <= 5 }) react("⭐")
 		if (points.any { it == 1 }) react("\uD83C\uDF1F")
