@@ -2,8 +2,8 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.8.0"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    kotlin("jvm") version "1.9.20"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     application
 }
 
@@ -15,11 +15,10 @@ repositories {
 }
 
 dependencies {
-    implementation("com.jessecorbett:diskord-bot:2.1.4")
+    implementation("com.jessecorbett:diskord-bot:5.2.0")
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
     kotlinOptions.freeCompilerArgs = listOf("-Xcontext-receivers")
 }
 

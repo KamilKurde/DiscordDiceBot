@@ -14,7 +14,7 @@ class Roll private constructor(
 	private val reply: Message,
 	private val scope: CoroutineScope,
 	botContext: BotContext,
-): Action {
+) : Action {
 
 	companion object {
 		private const val numberPattern = "(120|1[01]\\d|[1-9]\\d|[1-9])"
@@ -45,7 +45,7 @@ class Roll private constructor(
 				val rolls = List(dices) { Random.nextInt(1..max) }
 				val channel = initiatorMessage.channel
 				when (instantMode) {
-					true -> channel.editMessage(reply.id, MessageEdit(null, Embed().resultBoard(dices, max, rolls)))
+					true -> channel.editMessage(reply.id, MessageEdit(null, listOf(Embed().resultBoard(dices, max, rolls))))
 					false -> {
 						for (i in 1..dices) {
 							val visibleRolls = rolls.take(i)
@@ -65,7 +65,7 @@ class Roll private constructor(
 
 	context(BotContext)
 	private suspend fun updateReply(rolls: List<Int>) {
-		initiatorMessage.channel.editMessage(reply.id, MessageEdit(null, Embed().resultBoard(dices, max, rolls)))
+		initiatorMessage.channel.editMessage(reply.id, MessageEdit(null, listOf(Embed().resultBoard(dices, max, rolls))))
 	}
 
 	context(BotContext)
