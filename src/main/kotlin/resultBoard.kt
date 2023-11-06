@@ -1,7 +1,7 @@
 import com.jessecorbett.diskord.api.channel.*
 
 fun Embed.resultBoard(dices: Int, max: Int, result: List<Int>): Embed {
-	val sum = if (result.isEmpty()) "rolling" else result.sum().toString()
+	val sum = result.sum().toString()
 	title = "Rolling **${dices}d$max**"
 	description = result.joinToString("+")
 	footer = EmbedFooter(
