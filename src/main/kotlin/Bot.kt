@@ -12,7 +12,8 @@ private class Bot(private val botScope: CoroutineScope) {
 	}
 
 	private val replies = mutableListOf<BotReply>()
-	private val runningRolls = mutableMapOf<BotReply, CoroutineScope>()
+	private val runningActions = mutableMapOf<BotReply, CoroutineScope>()
+	private val runningRolls = mutableSetOf<BotReply>()
 
 	context (BotContext)
 	fun onMessageCreate(message: Message) {
@@ -33,10 +34,13 @@ private class Bot(private val botScope: CoroutineScope) {
 							instantMode = runningRolls.isNotEmpty(),
 						) {
 							replies += it
+							runningActions[it] = this
+							runningRolls.add(it)
 							reply = it
-							runningRolls[it] = this
 						}
-						reply?.let(runningRolls::remove)
+						runningRolls.remove(reply)
+					}.invokeOnCompletion {
+						reply?.let(runningActions::remove)
 					}
 				}
 
@@ -48,13 +52,13 @@ private class Bot(private val botScope: CoroutineScope) {
 	context (BotContext)
 	fun onMessageDelete(message: MessageDelete) {
 		val reply = replies.firstOrNull { it.initiatorMessageId == message.id }
-		botScope.launch {
-			reply?.delete()
-		}
 		if (reply != null) {
 			replies -= reply
-			runningRolls[reply]?.cancel()
+			runningActions.remove(reply)?.cancel()
 			runningRolls.remove(reply)
+		}
+		botScope.launch {
+			reply?.delete()
 		}
 	}
 }
