@@ -2,6 +2,9 @@ import com.jessecorbett.diskord.api.common.Message
 import com.jessecorbett.diskord.api.common.MessageDelete
 import com.jessecorbett.diskord.bot.*
 import kotlinx.coroutines.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.io.File
 
 private class Bot(private val botScope: CoroutineScope) {
 	companion object {
@@ -9,9 +12,28 @@ private class Bot(private val botScope: CoroutineScope) {
 		private const val INTERACTION_PATTERN = "[Rr]oll "
 		private val INTERACTION_REGEX = Regex("$INTERACTION_PATTERN.*")
 		private val ROLL_REGEX = Regex("$INTERACTION_PATTERN(${DICE_PATTERN}d)?$DICE_PATTERN")
+
+		private object REPLIES {
+			private val FILE = File(".replies.dicebot")
+
+			operator fun plusAssign(reply: BotReply) {
+				val serialized = Json.encodeToString(reply)
+				FILE.appendText("$serialized\n")
+			}
+
+			operator fun minusAssign(reply: BotReply) {
+				val serialized = Json.encodeToString(reply)
+				FILE.writeText(FILE.readText().replace("$serialized\n", ""))
+			}
+
+			fun forMessage(message: MessageDelete): BotReply? = FILE.reader().useLines { lines ->
+				lines.firstOrNull { line ->
+					message.id in line
+				}?.let(Json::decodeFromString)
+			}
+		}
 	}
 
-	private val replies = mutableListOf<BotReply>()
 	private val runningActions = mutableMapOf<BotReply, CoroutineScope>()
 	private val runningRolls = mutableSetOf<BotReply>()
 
@@ -33,7 +55,7 @@ private class Bot(private val botScope: CoroutineScope) {
 							max = max.toInt(),
 							instantMode = runningRolls.isNotEmpty(),
 						) {
-							replies += it
+							REPLIES += it
 							runningActions[it] = this
 							runningRolls.add(it)
 							reply = it
@@ -44,16 +66,16 @@ private class Bot(private val botScope: CoroutineScope) {
 					}
 				}
 
-				INTERACTION_REGEX.matchEntire(message.content) != null -> replies += help(message)
+				INTERACTION_REGEX.matchEntire(message.content) != null -> REPLIES += help(message)
 			}
 		}
 	}
 
 	context (BotContext)
 	fun onMessageDelete(message: MessageDelete) {
-		val reply = replies.firstOrNull { it.initiatorMessageId == message.id }
+		val reply = REPLIES.forMessage(message)
 		if (reply != null) {
-			replies -= reply
+			REPLIES -= reply
 			runningActions.remove(reply)?.cancel()
 			runningRolls.remove(reply)
 		}

@@ -2,3 +2,6 @@
 /.gradle/
 /build/
 .idea/
+
+# Runtime files
+.replies.dicebot
