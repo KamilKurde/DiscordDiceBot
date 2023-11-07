@@ -18,6 +18,6 @@ suspend fun Message.updateReactions(max: Int, points: List<Int>, reactions: Muta
 context(BotContext, MutableSet<String>)
 private suspend fun Message.addReaction(emoji: String) {
 	if (contains(emoji)) return
-	react(emoji)
 	add(emoji)
+	react(emoji)
 }
