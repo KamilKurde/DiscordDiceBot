@@ -27,5 +27,9 @@ application {
 }
 
 tasks.withType(ShadowJar::class.java) {
+	minimize {
+		exclude(dependency("org.slf4j:slf4j-simple"))
+		exclude(dependency("io.ktor:ktor-serialization-kotlinx-json-jvm"))
+	}
 	archiveClassifier.set("")
 }
