@@ -9,7 +9,8 @@ import kotlin.random.nextInt
 private const val UPDATE_DELAY = 1_000L
 
 context (BotContext)
-suspend fun roll(initiatorMessage: Message, dice: Int, max: Int, instantMode: Boolean, replyScope: CoroutineScope, onReplyCreation: (BotReply) -> Unit) {
+@Suppress("SuspendFunctionOnCoroutineScope")
+suspend fun CoroutineScope.roll(initiatorMessage: Message, dice: Int, max: Int, instantMode: Boolean, onReplyCreation: (BotReply) -> Unit) {
 	val rolls = List(dice) { Random.nextInt(1..max) }
 
 	val reply = initiatorMessage.reply {
@@ -28,13 +29,13 @@ suspend fun roll(initiatorMessage: Message, dice: Int, max: Int, instantMode: Bo
 				resultBoard(dice, max, visibleRolls)
 			}
 			delay(UPDATE_DELAY)
-			replyScope.launch {
+			launch {
 				initiatorMessage.updateReactions(max, visibleRolls, reactions)
 			}
 		}
 	}
 
-	replyScope.launch {
+	launch {
 		initiatorMessage.updateReactions(max, rolls, reactions)
 		initiatorMessage.react("✅")
 	}

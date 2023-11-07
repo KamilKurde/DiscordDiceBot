@@ -31,7 +31,6 @@ private class Bot(private val botScope: CoroutineScope) {
 							dice = dice.ifBlank { "1" }.toInt(),
 							max = max.toInt(),
 							instantMode = runningRolls.isNotEmpty(),
-							replyScope = CoroutineScope(coroutineContext)
 						) {
 							replies += it
 							reply = it
