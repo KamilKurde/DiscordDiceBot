@@ -1,16 +1,19 @@
-import com.jessecorbett.diskord.api.common.Message
-import com.jessecorbett.diskord.bot.BotContext
-import kotlinx.coroutines.*
+import dev.kord.core.behavior.edit
+import dev.kord.core.behavior.reply
+import dev.kord.core.entity.Message
+import dev.kord.core.entity.ReactionEmoji
+import dev.kord.rest.request.KtorRequestException
+import io.ktor.http.*
+import kotlinx.coroutines.delay
 import roll.updateReactions
-import util.edit
 import kotlin.random.Random
 import kotlin.random.nextInt
 
 private const val UPDATE_DELAY = 1_000L
 
-context (BotContext)
-@Suppress("SuspendFunctionOnCoroutineScope")
-suspend fun CoroutineScope.roll(initiatorMessage: Message, dice: Int, max: Int, instantMode: Boolean, onReplyCreation: (BotReply) -> Unit) {
+suspend fun roll(
+	initiatorMessage: Message, dice: Int, max: Int, instantMode: Boolean, onReplyCreation: (BotReply) -> Unit
+) {
 	val rolls = List(dice) { Random.nextInt(1..max) }
 
 	val reply = initiatorMessage.reply {
@@ -19,24 +22,26 @@ suspend fun CoroutineScope.roll(initiatorMessage: Message, dice: Int, max: Int, 
 
 	onReplyCreation(BotReply(initiatorMessage.id, reply.id, reply.channelId))
 
-	val reactions = mutableSetOf<String>()
+	val reactions = mutableSetOf<ReactionEmoji>()
 	delay(UPDATE_DELAY)
 
 	if (instantMode.not() && dice > 1) {
 		for (i in 2..dice) {
 			val visibleRolls = rolls.take(i)
-			reply.edit {
-				resultBoard(dice, max, visibleRolls)
+			try {
+				reply.edit {
+					resultBoard(dice, max, visibleRolls)
+				}
+			} catch (e: KtorRequestException) {
+				if (e.httpResponse.status == HttpStatusCode.NotFound) {
+					return
+				}
 			}
 			delay(UPDATE_DELAY)
-			launch {
-				initiatorMessage.updateReactions(max, visibleRolls, reactions)
-			}
+			initiatorMessage.updateReactions(max, visibleRolls, reactions)
 		}
 	}
 
-	launch {
-		initiatorMessage.updateReactions(max, rolls, reactions)
-		initiatorMessage.react("✅")
-	}
+	initiatorMessage.updateReactions(max, rolls, reactions)
+	initiatorMessage.addReaction(ReactionEmoji.Unicode("✅"))
 }

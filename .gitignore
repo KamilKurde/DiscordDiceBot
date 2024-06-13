@@ -2,6 +2,7 @@
 /.gradle/
 /build/
 .idea/
+.kotlin/
 
 # Runtime files
 .replies.dicebot

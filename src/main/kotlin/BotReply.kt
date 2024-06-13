@@ -1,8 +1,5 @@
-import com.jessecorbett.diskord.bot.BotContext
+import dev.kord.common.entity.Snowflake
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class BotReply(val initiatorMessageId: String, val replyId: String, val channelId: String){
-	context (BotContext)
-	suspend fun delete() = channel(channelId).deleteMessage(replyId)
-}
+data class BotReply(val initiator: Snowflake, val reply: Snowflake, val channel: Snowflake)
